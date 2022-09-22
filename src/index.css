@@ -11,6 +11,26 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-.dot {
+.ScreenSaver {
   position: absolute;
+}
+.dvd {
+  font: italic 20px sans-serif;
+  width: 100px;
+  height: 100px;
+}
+ul {
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+}
+li {
+  margin: 20px;
+  padding: 5px;
+  background-color: #202225;
+  cursor: pointer;
+}
+li:hover, li.selected {
+  background-color: #2d3137;
 }
