@@ -14,11 +14,19 @@ code {
 .ScreenSaver {
   position: absolute;
 }
-.dvd {
-  font: italic 20px sans-serif;
-  width: 100px;
-  height: 100px;
+.ScreenSaver.blue {
+  filter: invert(65%) sepia(59%) saturate(6252%) hue-rotate(162deg) brightness(96%) contrast(101%);
 }
+.ScreenSaver.pink {
+  filter: invert(44%) sepia(76%) saturate(6758%) hue-rotate(286deg) brightness(110%) contrast(118%);
+}
+.ScreenSaver.black {
+  filter: invert(0%) sepia(4%) saturate(18%) hue-rotate(140deg) brightness(103%) contrast(104%);
+}
+.ScreenSaver.green {
+  filter: invert(78%) sepia(52%) saturate(4308%) hue-rotate(83deg) brightness(106%) contrast(115%);
+}
+
 ul {
   list-style-type: none;
   padding: 0;

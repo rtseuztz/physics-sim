@@ -1,8 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import physicsObj from "../physics/PhysicsObj";
+import dvd from './DVD_logo.svg'
 class screenSaver extends physicsObj {
-    constructor(element: SVGElement) {
-        super(element, 1, 1, 100, 100, 0, 0);
+    private colorIndex = 0;
+    private static colors = ["blue", "pink", "black", "green"]
+    private static colorLen = this.colors.length;
+    constructor(element: HTMLElement) {
+        super(element, 1, 1, 400, 400, 0, 0);
+        element.classList.add(screenSaver.colors[this.colorIndex])
     }
     protected animate = (timeStamp: number) => {
         var t = (timeStamp - this.previousTimeStamp) / 1000
@@ -13,53 +18,69 @@ class screenSaver extends physicsObj {
                 this.y = this.height - 1;
                 y = 0;
                 this.Vy.i = -this.Vy.i;
-                this.Ay.c = -this.Ay.c
+                this.collide()
             } else if (this.y + y <= 0) {
                 this.y = 0;
                 y = 0;
                 this.Vy.i = -this.Vy.i;
-                this.Ay.c = -this.Ay.c
+                this.collide()
             }
             this.dy(y);
             if (this.x + x >= this.width) {
                 this.x = this.width - 1;
                 x = 0
                 this.Vx.i = -this.Vx.i
-                this.Ax.c = -this.Ax.c
+                this.collide()
             } else if (this.x + x <= 0) {
                 this.x = 0;
                 x = 0
                 this.Vx.i = -this.Vx.i
-                this.Ax.c = -this.Ax.c
+                this.collide()
             }
             this.dx(x)
-            //for next time
             this.Vx.i = this.Vx.i + this.Ax.c * t
             this.Vy.i = this.Vy.i + this.Ay.c * t
-            this.start = timeStamp
         }
         this.previousTimeStamp = timeStamp;
         if (!this.done) {
             window.requestAnimationFrame(this.animate);
         }
     }
+    private collide() {
+        this.element.classList.remove(screenSaver.colors[this.colorIndex])
+        this.colorIndex = ++this.colorIndex % screenSaver.colorLen
+        this.element.classList.add(
+            screenSaver.colors[this.colorIndex]
+        )
+    }
     public end() {
         this.done = true;
     }
 }
-export default function ScreenSaver() {
+export interface ScreenSaverProps {
+    show: boolean
+}
+export default function ScreenSaver({ show }: ScreenSaverProps) {
+    const [physObj, setPhysObj] = useState<screenSaver | null>(null);
     useEffect(() => {
-        let element: SVGElement | null = document.querySelector('svg')
-        if (!element) return;
-        let physObj = new screenSaver(element)
-        physObj.startAnimation();
+        if (!physObj) return;
+        if (show) {
+            physObj.startAnimation()
+        } else {
+            physObj.end();
+        }
+    }, [physObj, show])
+    useEffect(() => {
+        let element: HTMLElement | null = document.querySelector('.ScreenSaver')
+        setTimeout(() => {
+            if (!element) return;
+            let physObj = new screenSaver(element)
+            setPhysObj(physObj);
+        }, 500)
     }, [])
     return (
-        <svg className="ScreenSaver" xmlns="http://www.w3.org/2000/svg">
-            <g>
-                <rect x="0" y="0" width="100" height="100" fill="red"></rect>
-                <text x="0" y="50" font-family="Verdana" font-size="35" fill="blue">Hello</text>
-            </g>
-        </svg>
+        <div style={{ visibility: show ? "inherit" : "hidden" }}>
+            <img height="200px" className="ScreenSaver" alt="dvd" src={dvd}></img>
+        </div>
     )
 }
