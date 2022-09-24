@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import ScreenSaver from './components/ScreenSaver';
+import BallPit from './components/BallPit';
 
 function App() {
   enum tabs {
@@ -23,6 +24,7 @@ function App() {
           <li onClick={() => toggleShow(tabs.df)}>Physics</li>
         </ul>
         <ScreenSaver show={currentTab === tabs.screensaver} />
+        <BallPit></BallPit>
       </header>
     </div>
   );

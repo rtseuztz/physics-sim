@@ -27,6 +27,9 @@ code {
   filter: invert(78%) sepia(52%) saturate(4308%) hue-rotate(83deg) brightness(106%) contrast(115%);
 }
 
+.Ball {
+  position: absolute;
+}
 ul {
   list-style-type: none;
   padding: 0;

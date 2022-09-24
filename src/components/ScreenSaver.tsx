@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import physicsObj from "../physics/PhysicsObj";
 import dvd from './DVD_logo.svg'
-class screenSaver extends physicsObj {
+export class screenSaver extends physicsObj {
     private colorIndex = 0;
     private static colors = ["blue", "pink", "black", "green"]
     private static colorLen = this.colors.length;
@@ -46,7 +46,7 @@ class screenSaver extends physicsObj {
             window.requestAnimationFrame(this.animate);
         }
     }
-    private collide() {
+    protected collide() {
         this.element.classList.remove(screenSaver.colors[this.colorIndex])
         this.colorIndex = ++this.colorIndex % screenSaver.colorLen
         this.element.classList.add(
