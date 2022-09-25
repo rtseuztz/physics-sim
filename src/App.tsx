@@ -18,13 +18,13 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        <BallPit></BallPit>
+        <ScreenSaver show={currentTab === tabs.screensaver} />
         Physics engine
         <ul>
           <li onClick={() => toggleShow(tabs.screensaver)}>Screen Saver</li>
           <li onClick={() => toggleShow(tabs.df)}>Physics</li>
         </ul>
-        <ScreenSaver show={currentTab === tabs.screensaver} />
-        <BallPit></BallPit>
       </header>
     </div>
   );

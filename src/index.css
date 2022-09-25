@@ -29,6 +29,7 @@ code {
 
 .Ball {
   position: absolute;
+  overflow: visible;
 }
 ul {
   list-style-type: none;
