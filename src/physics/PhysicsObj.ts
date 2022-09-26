@@ -1,3 +1,4 @@
+import { timeStamp } from "console";
 
 var body = document.body,
     html = document.documentElement;
@@ -77,7 +78,7 @@ export default class physicsObj {
      * Calculation order: Acceleration from force, distance, then velocities
      * @param timeStamp 
      */
-    protected animate = (timeStamp: number) => {
+    public readonly groupAnimate = (timeStamp: number) => {
         var t = (timeStamp - this.previousTimeStamp) / 1000
         if (this.previousTimeStamp !== timeStamp) {
 
@@ -110,6 +111,9 @@ export default class physicsObj {
             this.Vy += this.Ay() * t
         }
         this.previousTimeStamp = timeStamp;
+    }
+    protected animate = (timeStamp: number) => {
+        this.groupAnimate(timeStamp)
         if (!this.done) {
             window.requestAnimationFrame(this.animate);
         }

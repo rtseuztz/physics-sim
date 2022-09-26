@@ -14,15 +14,16 @@ class BallPitObj {
         this.ballLength = eleArr.length;
     }
     public startAnimation() {
-        this.balls.forEach((ball) => {
-            ball.startAnimation()
-        })
-        if (this.ballLength > 1) {
+
+        if (this.ballLength > 1 && this.done) {
             this.done = false;
             window.requestAnimationFrame(this.animate)
         }
     }
     protected animate = (timeStamp: number) => {
+        this.balls.forEach((ball) => {
+            ball.groupAnimate(timeStamp)
+        })
         for (var i = 0; i < this.ballLength - 1; i++) {
             for (var j = i + 1; j < this.ballLength; j++) {
                 if (this.balls[i].intersects(this.balls[j])) {
