@@ -21,8 +21,8 @@ export class screenSaver extends physicsObj {
     protected animate = (timeStamp: number) => {
         var t = (timeStamp - this.previousTimeStamp) / 1000
         if (this.previousTimeStamp !== timeStamp) {
-            var x = (this.Vx * t) + .5 * this.Ax() * (Math.pow(t, 2))
-            var y = (this.Vy * t) + .5 * this.Ay() * (Math.pow(t, 2))
+            var x = (this.Vx * t) + .5 * this.Ax * (Math.pow(t, 2))
+            var y = (this.Vy * t) + .5 * this.Ay * (Math.pow(t, 2))
             if (this.y + y >= this.height) {
                 this.y = this.height - 1;
                 y = 0;
@@ -47,8 +47,8 @@ export class screenSaver extends physicsObj {
                 this.collide()
             }
             this.dx(x)
-            this.Vx = this.Vx + this.Ax() * t
-            this.Vy = this.Vy + this.Ay() * t
+            this.Vx = this.Vx + this.Ax * t
+            this.Vy = this.Vy + this.Ay * t
         }
         this.previousTimeStamp = timeStamp;
         if (!this.done) {
@@ -69,27 +69,21 @@ export class screenSaver extends physicsObj {
 export interface ScreenSaverProps {
     show: boolean
 }
-export default function ScreenSaver({ show }: ScreenSaverProps) {
+export default function ScreenSaver() {
     const [physObj, setPhysObj] = useState<screenSaver | null>(null);
     useEffect(() => {
-        if (!physObj) return;
-        if (show) {
-            physObj.startAnimation()
-        } else {
+        const element = document.getElementById("screenSaver");
+        if (!element) return;
+        const physObj = new screenSaver(element);
+        setPhysObj(physObj);
+        physObj.startAnimation();
+        return () => {
             physObj.end();
         }
-    }, [physObj, show])
-    useEffect(() => {
-        let element: HTMLElement | null = document.querySelector('.ScreenSaver')
-        setTimeout(() => {
-            if (!element) return;
-            let physObj = new screenSaver(element)
-            setPhysObj(physObj);
-        }, 500)
     }, [])
     return (
-        <div style={{ visibility: show ? "inherit" : "hidden" }}>
-            <img height="200px" className="ScreenSaver" alt="dvd" src={dvd}></img>
+        <div >
+            <img height="200px" id="screenSaver" className="ScreenSaver" alt="dvd" src={dvd}></img>
         </div>
     )
 }

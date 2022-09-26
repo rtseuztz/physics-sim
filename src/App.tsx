@@ -15,16 +15,24 @@ function App() {
   function toggleShow(tab: tabs) {
     setCurrentTab(tab);
   }
+  /**
+   * Switch between tabs, hiding all but the current tab
+   */
+  function switchTab(): JSX.Element {
+    switch (currentTab) {
+      case tabs.screensaver:
+        return <ScreenSaver />
+      case tabs.df:
+        return <BallPit />
+    }
+  }
   return (
     <div className="App">
       <header className="App-header">
-        <BallPit></BallPit>
-        <ScreenSaver show={currentTab === tabs.screensaver} />
-        Physics engine
-        <ul>
-          <li onClick={() => toggleShow(tabs.screensaver)}>Screen Saver</li>
-          <li onClick={() => toggleShow(tabs.df)}>Physics</li>
-        </ul>
+        Physics Engine
+        <button onClick={() => toggleShow(tabs.screensaver)}>ScreenSaver</button>
+        <button onClick={() => toggleShow(tabs.df)}>BallPit</button>
+        {switchTab()}
       </header>
     </div>
   );

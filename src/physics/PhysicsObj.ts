@@ -54,8 +54,8 @@ export default class physicsObj {
         this.Vx = vx;
         this.Vy = vy;
     }
-    protected Ax = (): number => this.Fx / this.mass
-    protected Ay = (): number => this.Fy / this.mass
+    protected get Ax(): number { return this.Fx / this.mass }
+    protected get Ay(): number { return this.Fy / this.mass }
     protected resetForce = (): void => {
         this.setForce(this.defaultForceX, this.defaultForceY)
     }
@@ -88,8 +88,8 @@ export default class physicsObj {
             } else {
                 this.resetForce()
             }
-            var x = (this.Vx * t) + .5 * this.Ax() * (Math.pow(t, 2))
-            var y = (this.Vy * t) + .5 * this.Ay() * (Math.pow(t, 2))
+            var x = (this.Vx * t) + .5 * this.Ax * (Math.pow(t, 2))
+            var y = (this.Vy * t) + .5 * this.Ay * (Math.pow(t, 2))
             if (this.crossesBottom(y)) {
                 y = this.bottomBoundaryHit()
                 this.collide()
@@ -106,9 +106,9 @@ export default class physicsObj {
                 this.collide()
             }
             this.dx(x)
-            console.log(this.Ay())
-            this.Vx += this.Ax() * t
-            this.Vy += this.Ay() * t
+            console.log(this.Ay)
+            this.Vx += this.Ax * t
+            this.Vy += this.Ay * t
         }
         this.previousTimeStamp = timeStamp;
     }
@@ -144,6 +144,9 @@ export default class physicsObj {
         this.x = this.width - 1 + (offset || 0)
         this.Vx = -this.Vx
         return 0;
+    }
+    public stopAnimation() {
+        this.done = true;
     }
 
 }

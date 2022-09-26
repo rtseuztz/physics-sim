@@ -56,4 +56,7 @@ export default class Ball extends physicsObj {
     protected bottomBoundaryHit(offset?: number | undefined): number {
         return super.bottomBoundaryHit(-this.radius)
     }
+
+    //get a random apartment url from apartments.com
+
 }

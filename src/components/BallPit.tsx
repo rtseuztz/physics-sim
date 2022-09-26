@@ -1,11 +1,9 @@
 import { useEffect, useRef } from "react";
-import { couldStartTrivia } from "typescript";
-import physicsObj, { PhysicsParams } from "../physics/PhysicsObj";
 import Ball from '../physics/Ball'
 
 class BallPitObj {
     readonly balls: Ball[] = [];
-    readonly ballLength: number
+    protected ballLength: number
     done: boolean = true;
     constructor(eleArr: HTMLElement[]) {
         eleArr.forEach((ele) => {
@@ -64,35 +62,80 @@ class BallPitObj {
             window.requestAnimationFrame(this.animate);
         }
     }
-
+    public addBall(ele: HTMLElement): void {
+        this.balls.push(new Ball(ele, 30 * Math.random() + 5))
+        this.ballLength++;
+    }
+    //remove a random ball and the element
+    public removeBall(): void {
+        if (this.ballLength > 1) {
+            const ball = this.balls.pop()
+            ball?.element.remove()
+            this.ballLength--;
+        }
+    }
+    /**
+     * Stops the animation
+     */
     public end(): void {
         this.done = true;
     }
 }
-export default function BallPit() {
-    const ballNum = 220;
+
+export default function BallPit(this: any) {
+    var ballNum = 3;
     // https://stackoverflow.com/questions/58325771/how-to-generate-random-hex-string-in-javascript
-    const genRanHex = (size: number): string => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+    //generate random colors
+    const ballPitRef = useRef<SVGSVGElement>(null);
+    const ballPitObj = useRef<BallPitObj | null>(null);
+    useEffect(() => {
+        if (ballPitRef.current) {
+            const ballPit = ballPitRef.current;
+            const ballEles = [...ballPit.children].map((ele) => ele as HTMLElement);
+            ballPitObj.current = new BallPitObj(ballEles);
+            ballPitObj.current.startAnimation();
+
+        }
+        return () => {
+            if (ballPitObj.current) {
+                ballPitObj.current.end();
+            }
+        }
+    }, [])
     let eles: JSX.Element[] = [];
+    const genRanHex = (size: number): string => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+    //generate a circle element
+    const genCircle = (): JSX.Element => {
+        return <circle className="Ball" cx="50" cy="50" r="50" fill={"#" + genRanHex(6)} />
+    }
     for (var i = 0; i < ballNum; i++) {
         eles.push(
-            <circle className="Ball" cx="50" cy="50" r="50" fill={"#" + genRanHex(6)}>/</circle>
+            genCircle()
         )
     }
-    useEffect(() => {
-        let ballEles: HTMLElement[] = []
-        document.querySelectorAll("circle").forEach((e) => {
-            ballEles.push(e as unknown as HTMLElement)
-        })
-        const bp = new BallPitObj(ballEles)
-        setTimeout(() => bp.startAnimation(), 1000)
-    }, [])
 
     return (
         <>
-            <svg style={{ position: "absolute", width: "100%", height: "100%" }} className="BallPit">
+            <svg ref={ballPitRef} style={{ position: "absolute", width: "100%", height: "100%" }} className="BallPit">
                 {eles}
             </svg>
+            <button onClick={() => {
+                if (ballPitObj.current) {
+                    ballPitObj.current.startAnimation();
+                }
+            }}>Start</button>
+            <button onClick={() => {
+                if (ballPitObj.current) {
+                    ballPitObj.current.end();
+                }
+            }}>Stop</button>
+
+            <button onClick={() => {
+                if (ballPitObj.current) {
+                    ballPitObj.current.removeBall();
+                }
+            }}>Remove</button>
+
         </>
     )
 }
