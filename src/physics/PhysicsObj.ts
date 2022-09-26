@@ -21,18 +21,16 @@ export default class physicsObj {
     protected Fx: number;
     protected Fy: number;
     protected previousTimeStamp: number = 0;
-    protected isSvg: boolean
     protected done: boolean = false;
     protected isColliding: boolean = false;
     public readonly mass: number;
-    readonly defaultForceY: number = 5000;
+    readonly defaultForceY: number = 20;
     readonly defaultForceX: number = 0;
     readonly dampeningMultiplier = .7
     constructor({ element, x, y, vx, vy, fx, fy, mass }: PhysicsParams) {
         this.element = element;
         this.setX(x)
         this.setY(y);
-        this.isSvg = element.nodeName === "circle"
         this.Vx = vx
         this.Vy = vy
         this.Fx = fx;
@@ -107,6 +105,7 @@ export default class physicsObj {
                 this.collide()
             }
             this.dx(x)
+            console.log(this.Ay())
             this.Vx += this.Ax() * t
             this.Vy += this.Ay() * t
         }

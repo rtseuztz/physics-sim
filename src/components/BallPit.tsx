@@ -9,7 +9,7 @@ class BallPitObj {
     done: boolean = true;
     constructor(eleArr: HTMLElement[]) {
         eleArr.forEach((ele) => {
-            this.balls.push(new Ball(ele, 40 * Math.random() + 30))
+            this.balls.push(new Ball(ele, 30 * Math.random() + 5))
         })
         this.ballLength = eleArr.length;
     }
@@ -32,12 +32,10 @@ class BallPitObj {
                      * V2f = (2*m1*v1)/(m1+m2) - (m1-m2)v2/(m1+m2)
                      */
                     const b1 = this.balls[i], b2 = this.balls[j]
-                    // if (b1.getVx === 0 && b1.getVy === 0 && b2.getVx === 0 && b2.getVy === 0) {
-                    //     continue
-                    // }
-                    // if (b1.colliding || b2.colliding) {
-                    //     continue
-                    // }
+                    if (Math.abs(b1.getVx) < .1 && Math.abs(b1.getVy) < .1 &&
+                        Math.abs(b2.getVx) < .1 && Math.abs(b2.getVy) < .1) {
+                        continue
+                    }
                     const V1Template = (v1: number, v2: number): number => {
                         return (b1.mass - b2.mass) * v1 / (b1.mass + b2.mass) + (2 * b2.mass * v2) / (b1.mass + b2.mass);
                     }
@@ -46,9 +44,9 @@ class BallPitObj {
                     }
                     var b1x = V1Template(b1.getVx, b2.getVx), b1y = V1Template(b1.getVy, b2.getVy)
                     var b2x = V2Template(b1.getVx, b2.getVx), b2y = V2Template(b1.getVy, b2.getVy)
-                    console.log(b1x + " " + b2x)
-                    b1.setVelocity((1 - .09) * b1x, (1 - .09) * b1y);
-                    b2.setVelocity((1 - .09) * b2x, (1 - .09) * b2y)
+                    // console.log(b1y + " " + b2y)
+                    b1.setVelocity((1 - .009) * b1x, (1 - .009) * b1y);
+                    b2.setVelocity((1 - .009) * b2x, (1 - .009) * b2y)
                     // let newVelocity = (velocities[i] + velocities[j]) / 2
 
                     // this.balls[i].setVelocity(newVelocity * -Math.cos(angle), newVelocity * Math.sin(angle))
@@ -71,7 +69,7 @@ class BallPitObj {
     }
 }
 export default function BallPit() {
-    const ballNum = 20;
+    const ballNum = 220;
     // https://stackoverflow.com/questions/58325771/how-to-generate-random-hex-string-in-javascript
     const genRanHex = (size: number): string => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
     let eles: JSX.Element[] = [];

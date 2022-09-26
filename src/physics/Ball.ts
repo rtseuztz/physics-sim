@@ -8,12 +8,12 @@ export default class Ball extends physicsObj {
     constructor(element: HTMLElement, radius: number) {
         const BallParams: PhysicsParams = {
             element: element,
-            x: 1600 * Math.random() + 100,
-            y: 900 * Math.random() + 100,
-            vx: - 400 + Math.random() * 100,
-            vy: - 400 + Math.random() * 100,
+            x: document.body.clientWidth * Math.random(),
+            y: document.body.clientHeight * Math.random(),
+            vx: - 400 + Math.random() * 800,
+            vy: - 400 + Math.random() * 800,
             fx: 0,
-            fy: 50 * radius,
+            fy: 100 * radius,
             mass: radius
         }
         super(BallParams);
@@ -23,12 +23,12 @@ export default class Ball extends physicsObj {
     }
     protected setX(x: number) {
         this.x = x
-        this.element.setAttribute("cx", x + "")
+        this.element.setAttribute("cx", Math.round(x) + "")
     }
     get diameter() { return this.radius * 2 }
     protected setY(y: number) {
         this.y = y
-        this.element.setAttribute("cy", y + "")
+        this.element.setAttribute("cy", Math.round(y) + "")
     }
     public intersects(ball: Ball) {
         return Math.sqrt(Math.pow(this.x - ball.x, 2) + Math.pow(this.y - ball.y, 2)) < this.radius + ball.radius;// + (this.colliding || ball.colliding ? 0 : 10);
