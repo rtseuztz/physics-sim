@@ -1,15 +1,23 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Ball from '../physics/Ball'
 
 class BallPitObj {
     readonly balls: Ball[] = [];
-    protected ballLength: number
+    public ballLength: number
     done: boolean = true;
     constructor(eleArr: HTMLElement[]) {
         eleArr.forEach((ele) => {
+
             this.balls.push(new Ball(ele, 30 * Math.random() + 5))
         })
+        //set the first ball's mass (cursor) to 1 using the setmass function
+        this.balls[0].setMass(1)
+        this.balls[0].setVelocity(5000, 5000)
         this.ballLength = eleArr.length;
+        //track mouse position
+        window.addEventListener('mousemove', (e) => {
+            this.balls[0].move(e.clientX, e.clientY)
+        })
     }
     public startAnimation() {
 
@@ -19,8 +27,13 @@ class BallPitObj {
         }
     }
     protected animate = (timeStamp: number) => {
+        let first = true;
         this.balls.forEach((ball) => {
-            ball.groupAnimate(timeStamp)
+            if (first) {
+                first = false;
+                this.balls[0].setVelocity(5000, 5000)
+            } else
+                ball.groupAnimate(timeStamp)
         })
         for (var i = 0; i < this.ballLength - 1; i++) {
             for (var j = i + 1; j < this.ballLength; j++) {
@@ -62,8 +75,8 @@ class BallPitObj {
             window.requestAnimationFrame(this.animate);
         }
     }
-    public addBall(ele: HTMLElement): void {
-        this.balls.push(new Ball(ele, 30 * Math.random() + 5))
+    public addBall(ele: JSX.Element): void {
+        this.balls.push(new Ball(ele as unknown as HTMLElement, 30 * Math.random() + 5))
         this.ballLength++;
     }
     //remove a random ball and the element
@@ -83,11 +96,15 @@ class BallPitObj {
 }
 
 export default function BallPit(this: any) {
-    var ballNum = 3;
+    //ball num as state
+    const [ballNum, setBallNum] = useState(5);
+
     // https://stackoverflow.com/questions/58325771/how-to-generate-random-hex-string-in-javascript
     //generate random colors
     const ballPitRef = useRef<SVGSVGElement>(null);
     const ballPitObj = useRef<BallPitObj | null>(null);
+    //make eles array of jsx.element a use memo
+    const eles = useMemo<JSX.Element[]>(() => [], [])
     useEffect(() => {
         if (ballPitRef.current) {
             const ballPit = ballPitRef.current;
@@ -101,41 +118,75 @@ export default function BallPit(this: any) {
                 ballPitObj.current.end();
             }
         }
-    }, [])
-    let eles: JSX.Element[] = [];
+    }, [eles])
+    //function to end the previous ballpit and start a new one
+    const startNewBallPit = () => {
+        if (ballPitObj.current) {
+            ballPitObj.current.end();
+        }
+        const ballPit = ballPitRef.current;
+        if (!ballPit) {
+            return;
+        }
+        const ballEles = [...ballPit.children].map((ele) => ele as HTMLElement);
+        ballPitObj.current = new BallPitObj(ballEles);
+        ballPitObj.current.startAnimation();
+    }
     const genRanHex = (size: number): string => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
     //generate a circle element
     const genCircle = (): JSX.Element => {
         return <circle className="Ball" cx="50" cy="50" r="50" fill={"#" + genRanHex(6)} />
     }
+    //connect a ball to the mouse with usestate
+
+    eles.push(genCircle())
     for (var i = 0; i < ballNum; i++) {
         eles.push(
             genCircle()
         )
     }
 
+    //event handler for cursor to keep track of mouse. use effect
+    // const [mouseX, setMouseX] = useState<number>(0);
+    // const [mouseY, setMouseY] = useState<number>(0);
+    // useEffect(() => {
+    //     const handleMouseMove = (e: MouseEvent) => {
+    //         setMouseX(e.clientX)
+    //         setMouseY(e.clientY)
+    //     }
+    //     window.addEventListener("mousemove", handleMouseMove)
+    //     return () => {
+    //         window.removeEventListener("mousemove", handleMouseMove)
+    //     }
+    // }, [])
+
+    // when the mouse moves, update the force of the balls
+    // useEffect(() => {
+    //     // if (ballPitObj.current) {
+    //     //     ballPitObj.current.updateForce(mouseX, mouseY)
+    //     // }
+    // }, [mouseX, mouseY])
     return (
         <>
             <svg ref={ballPitRef} style={{ position: "absolute", width: "100%", height: "100%" }} className="BallPit">
                 {eles}
             </svg>
-            <button onClick={() => {
+            <input type="range" min="2" max="200" value={ballNum} onChange={(e) => {
+                setBallNum(parseInt(e.target.value))
                 if (ballPitObj.current) {
-                    ballPitObj.current.startAnimation();
+                    if (ballPitObj.current.ballLength < ballNum) {
+                        for (var i = ballPitObj.current.ballLength; i < ballNum; i++) {
+                            const ball = genCircle()
+                            eles.push(ball)
+                        }
+                    } else if (ballPitObj.current.ballLength > ballNum) {
+                        for (var i = ballPitObj.current.ballLength; i > ballNum; i--) {
+                            eles.pop();
+                        }
+                    }
+                    startNewBallPit()
                 }
-            }}>Start</button>
-            <button onClick={() => {
-                if (ballPitObj.current) {
-                    ballPitObj.current.end();
-                }
-            }}>Stop</button>
-
-            <button onClick={() => {
-                if (ballPitObj.current) {
-                    ballPitObj.current.removeBall();
-                }
-            }}>Remove</button>
-
+            }} />
         </>
     )
 }

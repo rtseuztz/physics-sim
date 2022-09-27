@@ -24,8 +24,8 @@ export default class physicsObj {
     protected previousTimeStamp: number = 0;
     protected done: boolean = false;
     protected isColliding: boolean = false;
-    public readonly mass: number;
-    readonly defaultForceY: number = 20;
+    mass: number;
+    readonly defaultForceY: number = 500; //gravity
     readonly defaultForceX: number = 0;
     readonly dampeningMultiplier = .7
     constructor({ element, x, y, vx, vy, fx, fy, mass }: PhysicsParams) {
@@ -62,6 +62,9 @@ export default class physicsObj {
     public setForce = (fx: number, fy: number): void => {
         this.Fx = fx + this.defaultForceX;
         this.Fy = fy + this.defaultForceY;
+    }
+    public setMass(mass: number): void {
+        this.mass = mass;
     }
     public getVelocity(): number {
         return Math.sqrt(Math.pow(this.Vx, 2) + Math.pow(this.Vy, 2))
@@ -106,7 +109,6 @@ export default class physicsObj {
                 this.collide()
             }
             this.dx(x)
-            console.log(this.Ay)
             this.Vx += this.Ax * t
             this.Vy += this.Ay * t
         }

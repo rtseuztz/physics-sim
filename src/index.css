@@ -26,12 +26,15 @@ code {
 .ScreenSaver.green {
   filter: invert(78%) sepia(52%) saturate(4308%) hue-rotate(83deg) brightness(106%) contrast(115%);
 }
-
+#BallContainer {
+  width: 100%;
+  height: 100%;
+}
 .Ball {
   position: absolute;
   overflow: visible;
 }
-button {
+button, input {
   z-index: 1;
 }
 ul {

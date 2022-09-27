@@ -25,10 +25,19 @@ export default class Ball extends physicsObj {
         this.x = x
         this.element.setAttribute("cx", Math.round(x) + "")
     }
+    public setMass(mass: number): void {
+        this.mass = mass;
+        this.radius = mass;
+        this.element.setAttribute("r", "" + mass)
+    }
     get diameter() { return this.radius * 2 }
     protected setY(y: number) {
         this.y = y
         this.element.setAttribute("cy", Math.round(y) + "")
+    }
+    public move(x: number, y: number) {
+        this.setX(x)
+        this.setY(y)
     }
     public intersects(ball: Ball) {
         return Math.sqrt(Math.pow(this.x - ball.x, 2) + Math.pow(this.y - ball.y, 2)) < this.radius + ball.radius;// + (this.colliding || ball.colliding ? 0 : 10);
@@ -56,7 +65,5 @@ export default class Ball extends physicsObj {
     protected bottomBoundaryHit(offset?: number | undefined): number {
         return super.bottomBoundaryHit(-this.radius)
     }
-
-    //get a random apartment url from apartments.com
 
 }
