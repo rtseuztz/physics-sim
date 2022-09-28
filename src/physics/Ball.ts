@@ -5,6 +5,7 @@ import physicsObj, { PhysicsParams } from "./PhysicsObj";
  */
 export default class Ball extends physicsObj {
     radius: number = 0;
+
     constructor(element: HTMLElement, radius: number) {
         const BallParams: PhysicsParams = {
             element: element,
@@ -13,34 +14,46 @@ export default class Ball extends physicsObj {
             vx: - 400 + Math.random() * 800,
             vy: - 400 + Math.random() * 800,
             fx: 0,
-            fy: 100 * radius,
+            fy: 10 * radius,
             mass: radius
         }
         super(BallParams);
-        // super(element, 500, y, 0, 10, 0, 90);
         this.radius = radius;
         element.setAttribute("r", "" + radius)
     }
-    protected setX(x: number) {
-        this.x = x
-        this.element.setAttribute("cx", Math.round(x) + "")
+    public get x(): number { return this._x }
+    public set x(x: number) {
+        if (Number.isNaN(x)) {
+            return;
+        }
+        this._x = x;
+        this.element.setAttribute("cx", x + "")
     }
-    public setMass(mass: number): void {
-        this.mass = mass;
+    public get y(): number { return this._y }
+    public set y(y: number) {
+        if (Number.isNaN(y)) {
+            return;
+        }
+        this._y = y;
+        this.element.setAttribute("cy", y + "")
+    }
+    public dx = (dx: number): physicsObj => { this.x = (dx + this.x); return this }
+    public dy = (dy: number): physicsObj => { this.y = (dy + this.y); return this }
+    public get mass(): number { return this._mass }
+    public set mass(mass: number) {
+        this._mass = mass;
         this.radius = mass;
         this.element.setAttribute("r", "" + mass)
     }
-    get diameter() { return this.radius * 2 }
-    protected setY(y: number) {
-        this.y = y
-        this.element.setAttribute("cy", Math.round(y) + "")
-    }
+    public get diameter() { return this.radius * 2 }
+
+    //utility functions
     public move(x: number, y: number) {
-        this.setX(x)
-        this.setY(y)
+        this.x = x
+        this.y = y
     }
     public intersects(ball: Ball) {
-        return Math.sqrt(Math.pow(this.x - ball.x, 2) + Math.pow(this.y - ball.y, 2)) < this.radius + ball.radius;// + (this.colliding || ball.colliding ? 0 : 10);
+        return Math.sqrt(Math.pow(this.x - ball.x, 2) + Math.pow(this.y - ball.y, 2)) < this.radius + ball.radius;
     }
     public angleBetween(ball: Ball) {
         return -Math.atan2(ball.y - this.y, ball.x - this.x)

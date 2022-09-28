@@ -11,8 +11,9 @@ class BallPitObj {
             this.balls.push(new Ball(ele, 30 * Math.random() + 5))
         })
         //set the first ball's mass (cursor) to 1 using the setmass function
-        this.balls[0].setMass(1)
-        this.balls[0].setVelocity(5000, 5000)
+        this.balls[0].mass = 1
+        this.balls[0].setVelocity(0, -100)
+        this.balls[0].element.style.visibility = "none"
         this.ballLength = eleArr.length;
         //track mouse position
         window.addEventListener('mousemove', (e) => {
@@ -44,8 +45,13 @@ class BallPitObj {
                      * V2f = (2*m1*v1)/(m1+m2) - (m1-m2)v2/(m1+m2)
                      */
                     const b1 = this.balls[i], b2 = this.balls[j]
-                    if (Math.abs(b1.getVx) < .1 && Math.abs(b1.getVy) < .1 &&
-                        Math.abs(b2.getVx) < .1 && Math.abs(b2.getVy) < .1) {
+                    if (i === 0) {
+                        //j hits cursor
+                        b2.setVelocity(1.5 * b2.vx, 1.5 * b2.vy)
+                        continue;
+                    }
+                    if (Math.abs(b1.vx) < .1 && Math.abs(b1.vy) < .1 &&
+                        Math.abs(b2.vy) < .1 && Math.abs(b2.vy) < .1) {
                         continue
                     }
                     const V1Template = (v1: number, v2: number): number => {
@@ -54,17 +60,16 @@ class BallPitObj {
                     const V2Template = (v1: number, v2: number): number => {
                         return (2 * b1.mass * v1) / (b1.mass + b2.mass) - (b1.mass - b2.mass) * v2 / (b1.mass + b2.mass)
                     }
-                    var b1x = V1Template(b1.getVx, b2.getVx), b1y = V1Template(b1.getVy, b2.getVy)
-                    var b2x = V2Template(b1.getVx, b2.getVx), b2y = V2Template(b1.getVy, b2.getVy)
-                    // console.log(b1y + " " + b2y)
+                    var b1x = V1Template(b1.vx, b2.vx), b1y = V1Template(b1.vy, b2.vy)
+                    var b2x = V2Template(b1.vx, b2.vx), b2y = V2Template(b1.vy, b2.vy)
+
+                    // .009 is due to multiple collisions, should only collide once though
+                    // when fixed, this can be the dampening factor 
                     b1.setVelocity((1 - .009) * b1x, (1 - .009) * b1y);
                     b2.setVelocity((1 - .009) * b2x, (1 - .009) * b2y)
-                    // let newVelocity = (velocities[i] + velocities[j]) / 2
-
-                    // this.balls[i].setVelocity(newVelocity * -Math.cos(angle), newVelocity * Math.sin(angle))
-                    // this.balls[j].setVelocity(newVelocity * -Math.cos(angle + Math.PI), newVelocity * Math.sin(angle + Math.PI))
                     const angle = b1.angleBetween(b2)
-                    b1.dx(-Math.cos(angle) * 1).dy(Math.sin(angle) * 1)
+                    b1.dx(-Math.cos(angle)).dy(Math.sin(angle) * 1)
+                    console.log(-Math.cos(angle) * 1, Math.sin(angle) * 1)
                     b2.dx(-Math.cos(angle + Math.PI) * 1).dy(Math.sin(angle + Math.PI) * 1)
                     b1.setForce(-Math.cos(angle), Math.sin(angle))
                     b2.setForce(-Math.cos(angle + Math.PI), Math.sin(angle + Math.PI))
