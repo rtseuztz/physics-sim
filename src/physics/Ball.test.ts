@@ -2,7 +2,7 @@
 import Ball from "./Ball";
 
 //test to see if the ball is created
-test("test ball creation", () => {
+test("ball creation", () => {
     const element = document.createElementNS("http://www.w3.org/2000/svg", "circle") as unknown as HTMLElement;
     const radius = 10;
     const ball = new Ball(element, radius);
@@ -12,7 +12,7 @@ test("test ball creation", () => {
 });
 
 //test to see a ball's attributes after a random amount of time between 0s and 2s
-test("test ball attributes after a random amount of time between 0s and .5s", () => {
+test("ball attributes after a random amount of time between 0s and .5s", () => {
     const element = document.createElementNS("http://www.w3.org/2000/svg", "circle") as unknown as HTMLElement;
     const radius = 10;
     const ball = new Ball(element, radius);

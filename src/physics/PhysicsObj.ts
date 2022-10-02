@@ -125,7 +125,7 @@ export default class physicsObj {
 
             if (this._isColliding) {
                 this.setForce(0, 0)
-                this._isColliding = false;
+                //this._isColliding = false;
             } else {
                 this.resetForce()
             }
@@ -150,6 +150,7 @@ export default class physicsObj {
             this.dx(dx)
             this.vx = physicsObj.kinematics.velocity(this.vx, this.ax, t)
             this.vy = physicsObj.kinematics.velocity(this.vy, this.ay, t)
+            console.log(this.vx, this.vy)
         }
         this._previousTimeStamp = timeStamp;
     }
@@ -166,6 +167,7 @@ export default class physicsObj {
     protected bottomBoundaryHit(offset?: number): number {
         this.y = this.height - 1 + (offset || 0)
         this.vy = -this.vy * this.dampeningMultiplier
+        this.fy = 0;
         return 0;
     }
     protected crossesTop = (y: number): boolean => this.y + y <= 1

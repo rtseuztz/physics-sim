@@ -52,8 +52,8 @@ export default class Ball extends physicsObj {
         this.x = x
         this.y = y
     }
-    public intersects(ball: Ball) {
-        return Math.sqrt(Math.pow(this.x - ball.x, 2) + Math.pow(this.y - ball.y, 2)) < this.radius + ball.radius;
+    public intersects(ball: Ball): number {
+        return Math.sqrt(Math.pow(this.x - ball.x, 2) + Math.pow(this.y - ball.y, 2)) - (this.radius + ball.radius);
     }
     public angleBetween(ball: Ball) {
         return -Math.atan2(ball.y - this.y, ball.x - this.x)
@@ -62,7 +62,7 @@ export default class Ball extends physicsObj {
         return this.y + y - this.radius <= 1
     }
     protected topBoundaryHit(offset?: number | undefined): number {
-        return super.topBoundaryHit(this.radius)
+        return super.topBoundaryHit(this.radius + 1)
     }
     protected crossesLeft = (x: number): boolean => {
         return this.x + x - this.radius <= 1

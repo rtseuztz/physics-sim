@@ -36,9 +36,13 @@ class BallPitObj {
             } else
                 ball.groupAnimate(timeStamp)
         })
+        const ballsDx: number[] = [];
+        const ballsDy: number[] = [];
         for (var i = 0; i < this.ballLength - 1; i++) {
             for (var j = i + 1; j < this.ballLength; j++) {
-                if (this.balls[i].intersects(this.balls[j])) {
+                var overlap = this.balls[i].intersects(this.balls[j])
+                if (overlap < 0) {
+                    overlap = Math.abs(overlap);
                     /**
                      * Using momentum equation with elastic collision: 
                      * V1f = (m1-m2)v1/(m1+m2) + (2*m2*v2)/(m1+m2)
@@ -47,7 +51,7 @@ class BallPitObj {
                     const b1 = this.balls[i], b2 = this.balls[j]
                     if (i === 0) {
                         //j hits cursor
-                        b2.setVelocity(1.5 * b2.vx, 1.5 * b2.vy)
+                        b2.setVelocity(1.1 * b2.vx, 1.1 * b2.vy)
                         continue;
                     }
                     if (Math.abs(b1.vx) < .1 && Math.abs(b1.vy) < .1 &&
@@ -60,22 +64,32 @@ class BallPitObj {
                     const V2Template = (v1: number, v2: number): number => {
                         return (2 * b1.mass * v1) / (b1.mass + b2.mass) - (b1.mass - b2.mass) * v2 / (b1.mass + b2.mass)
                     }
-                    var b1x = V1Template(b1.vx, b2.vx), b1y = V1Template(b1.vy, b2.vy)
-                    var b2x = V2Template(b1.vx, b2.vx), b2y = V2Template(b1.vy, b2.vy)
-
+                    const b1x = V1Template(b1.vx, b2.vx), b1y = V1Template(b1.vy, b2.vy)
+                    const b2x = V2Template(b1.vx, b2.vx), b2y = V2Template(b1.vy, b2.vy)
+                    const b1overlap = (b1.radius / (b1.radius + b2.radius)) * overlap
+                    const b2overlap = overlap - b1overlap;
                     // .009 is due to multiple collisions, should only collide once though
                     // when fixed, this can be the dampening factor 
                     b1.setVelocity((1 - .009) * b1x, (1 - .009) * b1y);
                     b2.setVelocity((1 - .009) * b2x, (1 - .009) * b2y)
                     const angle = b1.angleBetween(b2)
-                    b1.dx(-Math.cos(angle)).dy(Math.sin(angle) * 1)
-                    console.log(-Math.cos(angle) * 1, Math.sin(angle) * 1)
-                    b2.dx(-Math.cos(angle + Math.PI) * 1).dy(Math.sin(angle + Math.PI) * 1)
-                    b1.setForce(-Math.cos(angle), Math.sin(angle))
-                    b2.setForce(-Math.cos(angle + Math.PI), Math.sin(angle + Math.PI))
+                    // ballsDx[i] += -Math.cos(angle) * b1overlap
+                    // ballsDx[j] += Math.cos(angle) * b2overlap
+                    // ballsDy[i] += Math.sin(angle) * b1overlap
+                    // ballsDy[j] += -Math.sin(angle) * b2overlap
+
+                    b1.dx(-Math.cos(angle)).dy(Math.sin(angle))
+                    b2.dx(Math.cos(angle)).dy(-Math.sin(angle))
+                    //b1.setForce(-Math.cos(angle), Math.sin(angle))
+                    //b2.setForce(-Math.cos(angle + Math.PI), Math.sin(angle + Math.PI))
+                    //b1.collide()
+                    //b2.collide()
                 }
             }
         }
+        // for (var i = 0; i < this.ballLength; i++) {
+        //     this.balls[i].dx(ballsDx[i] ?? 0).dy(ballsDy[i] ?? 0)
+        // }
         if (!this.done) {
             window.requestAnimationFrame(this.animate);
         }
@@ -104,8 +118,6 @@ export default function BallPit(this: any) {
     //ball num as state
     const [ballNum, setBallNum] = useState(5);
 
-    // https://stackoverflow.com/questions/58325771/how-to-generate-random-hex-string-in-javascript
-    //generate random colors
     const ballPitRef = useRef<SVGSVGElement>(null);
     const ballPitObj = useRef<BallPitObj | null>(null);
     //make eles array of jsx.element a use memo
@@ -138,39 +150,15 @@ export default function BallPit(this: any) {
         ballPitObj.current.startAnimation();
     }
     const genRanHex = (size: number): string => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
-    //generate a circle element
     const genCircle = (): JSX.Element => {
         return <circle className="Ball" cx="50" cy="50" r="50" fill={"#" + genRanHex(6)} />
     }
-    //connect a ball to the mouse with usestate
-
     eles.push(genCircle())
     for (var i = 0; i < ballNum; i++) {
         eles.push(
             genCircle()
         )
     }
-
-    //event handler for cursor to keep track of mouse. use effect
-    // const [mouseX, setMouseX] = useState<number>(0);
-    // const [mouseY, setMouseY] = useState<number>(0);
-    // useEffect(() => {
-    //     const handleMouseMove = (e: MouseEvent) => {
-    //         setMouseX(e.clientX)
-    //         setMouseY(e.clientY)
-    //     }
-    //     window.addEventListener("mousemove", handleMouseMove)
-    //     return () => {
-    //         window.removeEventListener("mousemove", handleMouseMove)
-    //     }
-    // }, [])
-
-    // when the mouse moves, update the force of the balls
-    // useEffect(() => {
-    //     // if (ballPitObj.current) {
-    //     //     ballPitObj.current.updateForce(mouseX, mouseY)
-    //     // }
-    // }, [mouseX, mouseY])
     return (
         <>
             <svg ref={ballPitRef} style={{ position: "absolute", width: "100%", height: "100%" }} className="BallPit">
